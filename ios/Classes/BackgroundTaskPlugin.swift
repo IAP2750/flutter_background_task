@@ -105,6 +105,7 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
                 desiredAccuracy = .reduced
             }
             let isEnabledEvenIfKilled = (args?["isEnabledEvenIfKilled"] as? Bool) ?? false
+            let useOnlySignificantLocationChanges = (args?["iOSUseOnlySignificantLocationChanges"] as? Bool) ?? false
             
             let userDefaultsRepository = UserDefaultsRepository.instance
             userDefaultsRepository.removeRawHandle()
@@ -117,7 +118,8 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
             userDefaultsRepository.save(
                 distanceFilter: distanceFilter,
                 desiredAccuracy: desiredAccuracy,
-                pausesLocationUpdatesAutomatically: pausesLocationUpdatesAutomatically
+                pausesLocationUpdatesAutomatically: pausesLocationUpdatesAutomatically,
+                useOnlySignificantLocationChanges: useOnlySignificantLocationChanges
             )
             userDefaultsRepository.saveIsEnabledEvenIfKilled(isEnabledEvenIfKilled)
             
@@ -132,10 +134,19 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
             locationManager.activityType = CLActivityType.fitness
             locationManager.delegate = self
             locationManager.requestAlwaysAuthorization()
-            if (isEnabledEvenIfKilled) {
+            
+            // Start location monitoring based on configuration
+            if (useOnlySignificantLocationChanges) {
+                // Only use significant location changes (battery efficient)
                 locationManager.startMonitoringSignificantLocationChanges()
+            } else {
+                // Use regular location updates
+                if (isEnabledEvenIfKilled) {
+                    locationManager.startMonitoringSignificantLocationChanges()
+                }
+                locationManager.startUpdatingLocation()
             }
-            locationManager.startUpdatingLocation()
+            
             Self.locationManager = locationManager
             Self.isRunning = true
             StatusEventStreamHandler.eventSink?(
@@ -167,14 +178,23 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
             registerDispatchEngine()
             let locationManager = CLLocationManager()
             locationManager.allowsBackgroundLocationUpdates = true
+            let (distanceFilter, desiredAccuracy, pausesLocationUpdatesAutomatically, useOnlySignificantLocationChanges) = UserDefaultsRepository.instance.fetch()
             locationManager.showsBackgroundLocationIndicator = true
-            let (distanceFilter, desiredAccuracy, pausesLocationUpdatesAutomatically) = UserDefaultsRepository.instance.fetch()
             locationManager.pausesLocationUpdatesAutomatically = pausesLocationUpdatesAutomatically
             locationManager.distanceFilter = distanceFilter
             locationManager.desiredAccuracy = desiredAccuracy.kCLLocation
             locationManager.delegate = self
-            locationManager.startMonitoringSignificantLocationChanges()
-            locationManager.startUpdatingLocation()
+            
+            // Start location monitoring based on configuration
+            if (useOnlySignificantLocationChanges) {
+                // Only use significant location changes
+                locationManager.startMonitoringSignificantLocationChanges()
+            } else {
+                // Use both significant changes and regular updates
+                locationManager.startMonitoringSignificantLocationChanges()
+                locationManager.startUpdatingLocation()
+            }
+            
             Self.locationManager = locationManager
             Self.isRunning = true
         }

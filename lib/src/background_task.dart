@@ -73,6 +73,11 @@ class BackgroundTask {
   /// `iOSDesiredAccuracy` - the desired accuracy of the location data for iOS.
   /// `AndroidDesiredAccuracy` - the desired accuracy of the location data
   ///  for Android.
+  /// `iOSUseOnlySignificantLocationChanges` - (iOS only) if set to true,
+  /// uses only significant location changes without real-time location updates.
+  /// This is more battery efficient but less precise. Note: When using only
+  /// significant location changes, the background location indicator may not
+  /// be displayed consistently by iOS.
   Future<void> start({
     double? distanceFilter,
     bool? pausesLocationUpdatesAutomatically,
@@ -81,6 +86,7 @@ class BackgroundTask {
     DesiredAccuracy iOSDesiredAccuracy = DesiredAccuracy.bestForNavigation,
     AndroidDesiredAccuracy androidDesiredAccuracy =
         AndroidDesiredAccuracy.priorityBalancedPowerAccuracy,
+    bool iOSUseOnlySignificantLocationChanges = false,
   }) async {
     await _methodChannel.invokeMethod<bool>(
       'start_background_task',
@@ -92,6 +98,8 @@ class BackgroundTask {
         'updateIntervalInMilliseconds': updateIntervalInMilliseconds,
         'iOSDesiredAccuracy': iOSDesiredAccuracy.value,
         'androidDesiredAccuracy': androidDesiredAccuracy.value,
+        'iOSUseOnlySignificantLocationChanges':
+            iOSUseOnlySignificantLocationChanges,
       },
     );
   }

@@ -54,6 +54,7 @@ class _MainPageState extends State<MainPage> {
   String _bgText = 'no start';
   String _statusText = 'status';
   bool _isEnabledEvenIfKilled = true;
+  bool _iOSUseOnlySignificantLocationChanges = false;
 
   late final StreamSubscription<Location> _bgDisposer;
   late final StreamSubscription<StatusEvent> _statusDisposer;
@@ -178,6 +179,8 @@ class _MainPageState extends State<MainPage> {
                       if (status.isGranted && statusAlways.isGranted) {
                         await BackgroundTask.instance.start(
                           isEnabledEvenIfKilled: _isEnabledEvenIfKilled,
+                          iOSUseOnlySignificantLocationChanges:
+                              _iOSUseOnlySignificantLocationChanges,
                         );
                         setState(() {
                           _bgText = 'start';
@@ -195,6 +198,47 @@ class _MainPageState extends State<MainPage> {
                 ),
               ],
             ),
+            if (Platform.isIOS) ...[
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Text(
+                  'iOS Options',
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: 'Only significant changes (battery efficient)',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          WidgetSpan(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 2),
+                              child: CupertinoSwitch(
+                                value: _iOSUseOnlySignificantLocationChanges,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _iOSUseOnlySignificantLocationChanges = value;
+                                  });
+                                },
+                              ),
+                            ),
+                            alignment: PlaceholderAlignment.middle,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
