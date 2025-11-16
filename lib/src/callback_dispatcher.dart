@@ -19,9 +19,13 @@ void callbackDispatcher() {
           final callback = PluginUtilities.getCallbackFromHandle(
             CallbackHandle.fromRawHandle(handle),
           );
+          final timestampMs = json['timestamp'] as int?;
           final data = (
             lat: json['lat'] as double?,
             lng: json['lng'] as double?,
+            timestamp: timestampMs != null
+                ? DateTime.fromMillisecondsSinceEpoch(timestampMs)
+                : null,
           );
           callback?.call(data);
         }

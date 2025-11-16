@@ -122,7 +122,14 @@ class BackgroundTask {
         final json = event as Map;
         final lat = json['lat'] as double?;
         final lng = json['lng'] as double?;
-        return (lat: lat, lng: lng);
+        final timestampMs = json['timestamp'] as int?;
+        return (
+          lat: lat,
+          lng: lng,
+          timestamp: timestampMs != null
+              ? DateTime.fromMillisecondsSinceEpoch(timestampMs)
+              : null,
+        );
       }).asBroadcastStream();
 
   /// `status` provides a stream of status events.

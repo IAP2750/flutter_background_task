@@ -223,7 +223,8 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let lat = locations.last?.coordinate.latitude
         let lng = locations.last?.coordinate.longitude
-        let location = ["lat": lat, "lng": lng] as [String : Double?]
+        let timestamp = Int64((locations.last?.timestamp.timeIntervalSince1970 ?? 0) * 1000)
+        let location = ["lat": lat, "lng": lng, "timestamp": timestamp] as [String : Any?]
         
         BgEventStreamHandler.eventSink?(location)
         StatusEventStreamHandler.eventSink?(
@@ -234,7 +235,8 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
         let data = [
             "callbackHandlerRawHandle": callbackHandlerRawHandle,
             "lat": lat,
-            "lng": lng
+            "lng": lng,
+            "timestamp": timestamp
         ] as [String : Any?]
         Self.dispatchChannel?.invokeMethod("background_handler", arguments: data)
     }

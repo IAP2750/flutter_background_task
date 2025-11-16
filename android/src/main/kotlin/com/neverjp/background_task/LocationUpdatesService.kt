@@ -181,6 +181,7 @@ class LocationUpdatesService: Service() {
                     val newLastLocation = locationResult.lastLocation
                     val lat = newLastLocation?.latitude
                     val lng = newLastLocation?.longitude
+                    val timestamp = newLastLocation?.time ?: 0L
                     val value = "lat:${lat ?: 0} lng:${lng ?: 0}"
                     _locationLiveData.value = Pair(lat, lng)
                     statusLiveData.value = StatusEventStreamHandler.StatusType.Updated(value).value
@@ -191,6 +192,7 @@ class LocationUpdatesService: Service() {
                             args["callbackHandlerRawHandle"] = it
                             args["lat"] = lat ?: 0
                             args["lng"] = lng ?: 0
+                            args["timestamp"] = timestamp
                             methodChannel?.invokeMethod("background_handler", args)
                         }
                     }

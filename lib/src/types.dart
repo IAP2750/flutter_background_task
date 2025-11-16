@@ -1,5 +1,6 @@
-/// `Location` is a type representing latitude and longitude.
-typedef Location = ({double? lat, double? lng});
+/// `Location` is a type representing latitude, longitude, and timestamp.
+/// The timestamp indicates when the location was determined by the device.
+typedef Location = ({double? lat, double? lng, DateTime? timestamp});
 
 /// `StatusEvent` is a type representing a status event.
 typedef StatusEvent = ({StatusEventType status, String? message});

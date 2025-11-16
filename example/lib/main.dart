@@ -64,7 +64,11 @@ class _MainPageState extends State<MainPage> {
     super.initState();
 
     _bgDisposer = BackgroundTask.instance.stream.listen((event) {
-      final message = '${DateTime.now()}: ${event.lat}, ${event.lng}';
+      final age = event.timestamp != null
+          ? DateTime.now().difference(event.timestamp!)
+          : null;
+      final ageText = age != null ? ' (${age.inSeconds}s ago)' : '';
+      final message = '${DateTime.now()}: ${event.lat}, ${event.lng}$ageText';
       debugPrint(message);
       setState(() {
         _bgText = message;
@@ -164,7 +168,7 @@ class _MainPageState extends State<MainPage> {
                             ),
                           ),
                           alignment: PlaceholderAlignment.middle,
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -215,23 +219,26 @@ class _MainPageState extends State<MainPage> {
                       TextSpan(
                         children: [
                           const TextSpan(
-                            text: 'Only significant changes (battery efficient)',
+                            text:
+                                'Only significant changes (battery efficient)',
                             style: TextStyle(fontSize: 12),
                           ),
                           WidgetSpan(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 2),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 2),
                               child: CupertinoSwitch(
                                 value: _iOSUseOnlySignificantLocationChanges,
                                 onChanged: (value) {
                                   setState(() {
-                                    _iOSUseOnlySignificantLocationChanges = value;
+                                    _iOSUseOnlySignificantLocationChanges =
+                                        value;
                                   });
                                 },
                               ),
                             ),
                             alignment: PlaceholderAlignment.middle,
-                          )
+                          ),
                         ],
                       ),
                     ),
