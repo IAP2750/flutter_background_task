@@ -123,7 +123,7 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
             )
             userDefaultsRepository.saveIsEnabledEvenIfKilled(isEnabledEvenIfKilled)
             
-            registerDispatchEngine()
+            BackgroundTaskPlugin.registerDispatchEngine()
           
             let locationManager = CLLocationManager()
             locationManager.allowsBackgroundLocationUpdates = true
@@ -175,7 +175,7 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
     
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
         if (launchOptions[UIApplication.LaunchOptionsKey.location] != nil) {
-            registerDispatchEngine()
+            BackgroundTaskPlugin.registerDispatchEngine()
             let locationManager = CLLocationManager()
             locationManager.allowsBackgroundLocationUpdates = true
             let (distanceFilter, desiredAccuracy, pausesLocationUpdatesAutomatically, useOnlySignificantLocationChanges) = UserDefaultsRepository.instance.fetch()
@@ -248,7 +248,7 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
         )
     }
     
-    private func registerDispatchEngine() {
+    public static func registerDispatchEngine() {
         if (Self.isRegisteredDispatchEngine) {
             return
         }
