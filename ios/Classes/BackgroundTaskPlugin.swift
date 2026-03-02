@@ -174,7 +174,12 @@ public class BackgroundTaskPlugin: NSObject, FlutterPlugin, CLLocationManagerDel
     }
     
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
-        if (launchOptions[UIApplication.LaunchOptionsKey.location] != nil) {
+        // With UIScene lifecycle, launchOptions[.location] is always nil because launch
+        // information is routed through scene connection options instead. Apple recommends
+        // restarting location services unconditionally at launch if they were previously
+        // active, rather than checking why the app was launched.
+        let wasMonitoringLocation = UserDefaultsRepository.instance.fetchIsEnabledEvenIfKilled()
+        if (wasMonitoringLocation) {
             BackgroundTaskPlugin.registerDispatchEngine()
             let locationManager = CLLocationManager()
             locationManager.allowsBackgroundLocationUpdates = true
