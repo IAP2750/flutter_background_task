@@ -14,8 +14,7 @@ enum StatusEventType {
   stop('stop'),
   updated('updated'),
   error('error'),
-  permission('permission'),
-  ;
+  permission('permission');
 
   const StatusEventType(this.value);
   final String value;
@@ -37,8 +36,7 @@ enum DesiredAccuracy {
   // 1キロメートルでの精度
   kilometer('kilometer'),
   // 3キロメートルでの精度
-  threeKilometers('threeKilometers'),
-  ;
+  threeKilometers('threeKilometers');
 
   const DesiredAccuracy(this.value);
   final String value;
@@ -48,8 +46,7 @@ enum AndroidDesiredAccuracy {
   priorityHighAccuracy('priorityHighAccuracy'),
   priorityBalancedPowerAccuracy('priorityBalancedPowerAccuracy'),
   priorityLowPower('priorityLowPower'),
-  priorityNoPower('priorityNoPower'),
-  ;
+  priorityNoPower('priorityNoPower');
 
   const AndroidDesiredAccuracy(this.value);
   final String value;
@@ -58,8 +55,7 @@ enum AndroidDesiredAccuracy {
 enum ChannelName {
   methods('com.neverjp.background_task/methods'),
   bgEvent('com.neverjp.background_task/bgEvent'),
-  statusEvent('com.neverjp.background_task/statusEvent'),
-  ;
+  statusEvent('com.neverjp.background_task/statusEvent');
 
   const ChannelName(this.value);
   final String value;

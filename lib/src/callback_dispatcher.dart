@@ -27,7 +27,9 @@ void callbackDispatcher() {
                 ? DateTime.fromMillisecondsSinceEpoch(timestampMs)
                 : null,
           );
-          callback?.call(data);
+          if (callback is BackgroundHandler) {
+            callback(data);
+          }
         }
       }
     })

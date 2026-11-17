@@ -29,17 +29,15 @@ class BackgroundTask {
 
   /// `setBackgroundHandler` provides a function of location information.
   Future<void> setBackgroundHandler(BackgroundHandler handler) async {
-    final callbackDispatcherHandle =
-        PluginUtilities.getCallbackHandle(callbackDispatcher);
+    final callbackDispatcherHandle = PluginUtilities.getCallbackHandle(
+      callbackDispatcher,
+    );
     final callbackHandler = PluginUtilities.getCallbackHandle(handler);
     if (callbackDispatcherHandle != null && callbackHandler != null) {
-      await _methodChannel.invokeMethod<bool>(
-        'set_background_handler',
-        {
-          'callbackDispatcherRawHandle': callbackDispatcherHandle.toRawHandle(),
-          'callbackHandlerRawHandle': callbackHandler.toRawHandle(),
-        },
-      );
+      await _methodChannel.invokeMethod<bool>('set_background_handler', {
+        'callbackDispatcherRawHandle': callbackDispatcherHandle.toRawHandle(),
+        'callbackHandlerRawHandle': callbackHandler.toRawHandle(),
+      });
     }
   }
 
@@ -50,14 +48,11 @@ class BackgroundTask {
     String? icon,
   }) async {
     if (Platform.isAndroid) {
-      await _methodChannel.invokeMethod<bool>(
-        'set_android_notification',
-        {
-          'title': title,
-          'message': message,
-          'icon': icon,
-        },
-      );
+      await _methodChannel.invokeMethod<bool>('set_android_notification', {
+        'title': title,
+        'message': message,
+        'icon': icon,
+      });
     }
   }
 
@@ -88,20 +83,16 @@ class BackgroundTask {
         AndroidDesiredAccuracy.priorityBalancedPowerAccuracy,
     bool iOSUseOnlySignificantLocationChanges = false,
   }) async {
-    await _methodChannel.invokeMethod<bool>(
-      'start_background_task',
-      {
-        'distanceFilter': distanceFilter,
-        'pausesLocationUpdatesAutomatically':
-            pausesLocationUpdatesAutomatically,
-        'isEnabledEvenIfKilled': isEnabledEvenIfKilled,
-        'updateIntervalInMilliseconds': updateIntervalInMilliseconds,
-        'iOSDesiredAccuracy': iOSDesiredAccuracy.value,
-        'androidDesiredAccuracy': androidDesiredAccuracy.value,
-        'iOSUseOnlySignificantLocationChanges':
-            iOSUseOnlySignificantLocationChanges,
-      },
-    );
+    await _methodChannel.invokeMethod<bool>('start_background_task', {
+      'distanceFilter': distanceFilter,
+      'pausesLocationUpdatesAutomatically': pausesLocationUpdatesAutomatically,
+      'isEnabledEvenIfKilled': isEnabledEvenIfKilled,
+      'updateIntervalInMilliseconds': updateIntervalInMilliseconds,
+      'iOSDesiredAccuracy': iOSDesiredAccuracy.value,
+      'androidDesiredAccuracy': androidDesiredAccuracy.value,
+      'iOSUseOnlySignificantLocationChanges':
+          iOSUseOnlySignificantLocationChanges,
+    });
   }
 
   /// `stop` stops the background task.
@@ -111,8 +102,9 @@ class BackgroundTask {
 
   /// `isRunning` returns whether the background task is running or not.
   Future<bool> get isRunning async {
-    final result =
-        await _methodChannel.invokeMethod<bool>('is_running_background_task');
+    final result = await _methodChannel.invokeMethod<bool>(
+      'is_running_background_task',
+    );
     return result ?? false;
   }
 
@@ -135,11 +127,19 @@ class BackgroundTask {
   /// `status` provides a stream of status events.
   Stream<StatusEvent> get status =>
       _statusEventChannel.receiveBroadcastStream().map((event) {
-        final value = (event as String).split(',');
+        final value = event as String;
+        final separatorIndex = value.indexOf(',');
+        final statusValue = separatorIndex == -1
+            ? value
+            : value.substring(0, separatorIndex);
+        final message = separatorIndex == -1
+            ? null
+            : value.substring(separatorIndex + 1);
         return (
-          status: StatusEventType.values
-              .firstWhere((element) => element.value == value[0]),
-          message: value.length > 1 ? value[1] : null,
+          status: StatusEventType.values.firstWhere(
+            (element) => element.value == statusValue,
+          ),
+          message: message,
         );
       }).asBroadcastStream();
 }

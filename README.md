@@ -108,21 +108,24 @@ import UIKit
 import Flutter
 import background_task // 👈 Add
 
-@UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
-    override func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
-        GeneratedPluginRegistrant.register(with: self)
-        // 👇 Add
-        BackgroundTaskPlugin.onRegisterDispatchEngine = {
-            GeneratedPluginRegistrant.register(with: BackgroundTaskPlugin.dispatchEngine)
-        }
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-    }
-}
+@main
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+      GeneratedPluginRegistrant.register(with: self)
+      // 👇 Add
+      BackgroundTaskPlugin.onRegisterDispatchEngine = {
+          GeneratedPluginRegistrant.register(with: BackgroundTaskPlugin.dispatchEngine)
+      }
+      return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
 
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+  }
+}
 ```
 
 Android: AndroidManifest.xml
@@ -131,8 +134,6 @@ Android: AndroidManifest.xml
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 ```
 
